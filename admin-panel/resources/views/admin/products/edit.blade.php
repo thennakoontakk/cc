@@ -1,0 +1,333 @@
+@extends('layouts.shared')
+
+@section('title', 'Edit Product - Admin Panel')
+@section('page-title', 'Edit Product')
+
+@section('styles')
+<style>
+    /* Product edit specific styles */
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+    
+    .page-header h1 {
+        color: #2c3e50;
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .breadcrumb {
+        color: #7f8c8d;
+        font-size: 0.9rem;
+    }
+    
+    .card {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+    
+    .card-header {
+        background: #f8f9fa;
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid #dee2e6;
+    }
+    
+    .card-header h3 {
+        color: #2c3e50;
+        font-size: 1.25rem;
+        margin: 0;
+    }
+    
+    .card-body {
+        padding: 2rem;
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: #2c3e50;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 0.9rem;
+        transition: border-color 0.3s ease;
+    }
+    
+    .form-control:focus {
+        outline: none;
+        border-color: #3498db;
+        box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+    }
+    
+    .form-control.is-invalid {
+        border-color: #e74c3c;
+    }
+    
+    .invalid-feedback {
+        color: #e74c3c;
+        font-size: 0.8rem;
+        margin-top: 0.25rem;
+    }
+    
+    .file-upload {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+    }
+    
+    .file-upload input[type="file"] {
+        position: absolute;
+        opacity: 0;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+    }
+    
+    .file-upload-label {
+        display: block;
+        padding: 0.75rem;
+        border: 2px dashed #ddd;
+        border-radius: 4px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: #f8f9fa;
+    }
+    
+    .file-upload:hover .file-upload-label {
+        border-color: #3498db;
+        background: #e3f2fd;
+    }
+    
+    .image-preview {
+        margin-top: 1rem;
+        text-align: center;
+    }
+    
+    .image-preview img {
+        max-width: 200px;
+        max-height: 200px;
+        border-radius: 4px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .current-image {
+        margin-bottom: 1rem;
+        text-align: center;
+    }
+    
+    .current-image img {
+        max-width: 200px;
+        max-height: 200px;
+        border-radius: 4px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .current-image p {
+        margin-top: 0.5rem;
+        font-size: 0.9rem;
+        color: #666;
+    }
+    
+    .checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .checkbox-group input[type="checkbox"] {
+        width: auto;
+    }
+    
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 4px;
+        text-decoration: none;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-block;
+        margin-right: 0.5rem;
+    }
+    
+    .btn-primary {
+        background: #3498db;
+        color: white;
+    }
+    
+    .btn-primary:hover {
+        background: #2980b9;
+    }
+    
+    .btn-secondary {
+        background: #95a5a6;
+        color: white;
+    }
+    
+    .btn-secondary:hover {
+        background: #7f8c8d;
+    }
+    
+    @media (max-width: 768px) {
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+        
+        .page-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+    }
+</style>
+@endsection
+
+@section('content')
+<div class="page-header">
+    <div>
+        <h1>Edit Product</h1>
+        <div class="breadcrumb">Home / Products / Edit / {{ $product->name }}</div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h3>Edit Product Information</h3>
+    </div>
+    <div class="card-body">
+        <form action="{{ route('admin.products.update', $product) }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            @method('PUT')
+            
+            <div class="form-group">
+                <label for="name">Product Name *</label>
+                <input type="text" id="name" name="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name', $product->name) }}" required>
+                @error('name')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+            
+            <div class="form-group">
+                <label for="description">Description *</label>
+                <textarea id="description" name="description" class="form-control @error('description') is-invalid @enderror" rows="4" required>{{ old('description', $product->description) }}</textarea>
+                @error('description')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="price">Price ($) *</label>
+                    <input type="number" id="price" name="price" class="form-control @error('price') is-invalid @enderror" value="{{ old('price', $product->price) }}" step="0.01" min="0" required>
+                    @error('price')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+                
+                <div class="form-group">
+                    <label for="stock">Stock Quantity *</label>
+                    <input type="number" id="stock" name="stock" class="form-control @error('stock') is-invalid @enderror" value="{{ old('stock', $product->stock) }}" min="0" required>
+                    @error('stock')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="category">Category *</label>
+                <select id="category" name="category" class="form-control @error('category') is-invalid @enderror" required>
+                    <option value="">Select Category</option>
+                    <option value="New Arrivals" {{ old('category', $product->category) == 'New Arrivals' ? 'selected' : '' }}>New Arrivals</option>
+                    <option value="Wall Hangings" {{ old('category', $product->category) == 'Wall Hangings' ? 'selected' : '' }}>Wall Hangings</option>
+                    <option value="Hand Painted Items" {{ old('category', $product->category) == 'Hand Painted Items' ? 'selected' : '' }}>Hand Painted Items</option>
+                    <option value="Decorative Items" {{ old('category', $product->category) == 'Decorative Items' ? 'selected' : '' }}>Decorative Items</option>
+                    <option value="Handmade Crafts" {{ old('category', $product->category) == 'Handmade Crafts' ? 'selected' : '' }}>Handmade Crafts</option>
+                </select>
+                @error('category')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+            
+            <div class="form-group">
+                <label for="image">Product Image</label>
+                
+                @if($product->image)
+                    <div class="current-image">
+                        <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}">
+                        <p>Current Image</p>
+                    </div>
+                @endif
+                
+                <div class="file-upload">
+                    <input type="file" id="image" name="image" class="@error('image') is-invalid @enderror" accept="image/*" onchange="previewImage(this)">
+                    <label for="image" class="file-upload-label">
+                        📁 Choose New Image File (JPG, PNG, GIF)
+                    </label>
+                </div>
+                <div id="imagePreview" class="image-preview" style="display: none;">
+                    <img id="previewImg" src="" alt="Preview">
+                    <p>New Image Preview</p>
+                </div>
+                @error('image')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+            
+            <div class="form-group">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="is_active" name="is_active" value="1" {{ old('is_active', $product->is_active) ? 'checked' : '' }}>
+                    <label for="is_active">Product is Active</label>
+                </div>
+            </div>
+            
+            <div class="form-group" style="margin-top: 30px;">
+                <button type="submit" class="btn btn-primary">Update Product</button>
+                <a href="{{ route('admin.products.show', $product) }}" class="btn btn-secondary">View Product</a>
+                <a href="{{ route('admin.products.index') }}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+@endsection
+
+@section('scripts')
+// Image preview
+function previewImage(input) {
+    const preview = document.getElementById('imagePreview');
+    const previewImg = document.getElementById('previewImg');
+    
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            previewImg.src = e.target.result;
+            preview.style.display = 'block';
+        }
+        
+        reader.readAsDataURL(input.files[0]);
+    } else {
+        preview.style.display = 'none';
+    }
+}
+@endsection
